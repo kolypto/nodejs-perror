@@ -1,0 +1,34 @@
+{
+  "name": "perror",
+  "description": "Smart named error objects",
+  "version": "0.0.1",
+  
+  "author": "kolypto <kolypto@gmail.com>",
+  "license": "MIT",
+  "maintainers": [
+    "kolypto <kolypto@gmail.com>"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:kolypto/nodejs-perror.git"
+  },
+  
+  "main": "./lib/index",
+  "keywords": [
+    "error",
+    "exception"
+  ],
+  
+  "dependencies": {
+  },
+  "devDependencies": {
+    "nodeunit": "0.8.2"
+  },
+  "engines": {
+    "node": ">= 0.9.0"
+  },
+  
+  "scripts": {
+    "test": "./node_modules/.bin/nodeunit tests/*-test.js"
+  }
+}
