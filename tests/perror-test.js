@@ -74,7 +74,7 @@ exports.testCode = function(test){
 };
 
 /** Test inheritance
- * @param test
+ * @param {test|deepEqual} test
  */
 exports.testInheritance = function(test){
     var NumberError = perror('NumberError', TypeError);
@@ -89,6 +89,9 @@ exports.testInheritance = function(test){
     test.done();
 };
 
+/** Test httpCode
+ * @param {test|deepEqual} test
+ */
 exports.testHttpCode = function(test){
     var NotFoundError = perror('NotFoundError', 'Not found').httpCode(404);
 
@@ -100,6 +103,52 @@ exports.testHttpCode = function(test){
     test.strictEqual(e.httpCode, 404); // httpCode ok
     test.strictEqual(e.message, 'Not found: Hey!');
     test.strictEqual(e+'', 'NotFoundError: Not found: Hey!');
+
+    test.done();
+};
+
+/** Test Code, Message, httpCode
+ * @param {test|deepEqual} test
+ */
+exports.testCodeMessageHttp = function(test){
+    var CustomError = perror(10, 'CustomError', 'Custom Error').httpCode(501);
+
+    // Test instance
+    var e = new CustomError('Hey!', {a:1});
+
+    test.strictEqual(e.name, 'CustomError');
+    test.strictEqual(e.code, 10);
+    test.strictEqual(e.httpCode, 501);
+    test.strictEqual(e.message, 'Custom Error: Hey!');
+    test.deepEqual(e.data, { a:1 });
+
+    return test.done();
+};
+
+/** Test wrapping
+ * @param {test|deepEqual} test
+ */
+exports.testWrapping = function(test){
+    // An error with defaults
+    var GenericError = perror(1024, 'GenericError', 'Generic Error').httpCode(500);
+    // A specific error with overrides
+    var CustomError = perror(10, 'CustomError', 'Custom Error').httpCode(501);
+
+    // Just in case...
+    test.strictEqual(new GenericError('Hey!')+'', 'GenericError: Generic Error: Hey!');
+    test.strictEqual(new CustomError('Hey!')+'', 'CustomError: Custom Error: Hey!');
+
+    // Test instance
+    var e = new GenericError(new CustomError('Hey!', {a:1}), {b:2});
+
+    test.ok(e instanceof GenericError); // Still the same instance
+    test.ok(!(e instanceof CustomError)); // Original prototype lost
+
+    test.strictEqual(e.name, 'CustomError'); // overridden
+    test.strictEqual(e.message, 'Generic Error: Custom Error: Hey!'); // merged messages
+    test.strictEqual(e.code, 10); // overridden
+    test.strictEqual(e.httpCode, 501); // overridden
+    test.deepEqual(e.data, {a:1}); // overridden
 
     test.done();
 };
