@@ -107,7 +107,7 @@ exports.testHttpCode = function(test){
     test.done();
 };
 
-/** Test Code, Message, httpCode
+/** Test Code, Message, httpCode + JSON
  * @param {test|deepEqual} test
  */
 exports.testCodeMessageHttp = function(test){
@@ -121,6 +121,16 @@ exports.testCodeMessageHttp = function(test){
     test.strictEqual(e.httpCode, 501);
     test.strictEqual(e.message, 'Custom Error: Hey!');
     test.deepEqual(e.data, { a:1 });
+
+    // Test JSON
+    var json = JSON.parse(JSON.stringify(e));
+    test.deepEqual(json, {
+        name: 'CustomError',
+        code: 10,
+        httpCode: 501,
+        message: 'Custom Error: Hey!',
+        data: { a:1 }
+    });
 
     return test.done();
 };
