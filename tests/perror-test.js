@@ -1,8 +1,6 @@
 'use strict';
 
-var util = require('util'),
-    perror = require('../')
-    ;
+var perror = require('../');
 
 /** Test simple errors
  * @param {test|deepEqual} test
@@ -14,7 +12,7 @@ exports.testSimple = function(test){
     test.strictEqual(SimpleError.prototype.name, 'SimpleError');
 
     // Test instance
-    var e = new SimpleError('Hey!'); // !!! LINE 17
+    var e = new SimpleError('Hey!'); // !!! LINE 15
 
     test.ok(e instanceof Error); // inheritance ok
     test.ok(e instanceof SimpleError); // inheritance ok
@@ -30,7 +28,7 @@ exports.testSimple = function(test){
 
     // Stack is fine
     test.ok(/^SimpleError/.test(e.stack)); // string ok
-    test.ok(/perror-test.js:17/.test(e.stack)); // line number ok
+    test.ok(/perror-test.js:15/.test(e.stack), e.stack); // line number ok
 
     // Test instance with data
     var e = new SimpleError('Hey!', {a:1});

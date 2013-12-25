@@ -228,3 +228,33 @@ app.get('/', function(req, res){
     });
 });
 ```
+
+
+
+
+
+
+perror.Lookup
+=============
+Having all those names and codes at hand, it's natural to desire a tool that creates Error objects by name or code.
+
+perror.Lookup does precisely this: construct it with an object of Errors (most probably - a module), and enjoy the
+lookup!
+
+```js
+var perror = require('perror);
+
+// Define your objects
+exports.AuthError   = perror(403, 'AuthError',   'Unauthorized');
+exports.NotFound    = perror(404, 'NotFound',    'Not found');
+exports.ServerError = perror(500, 'ServerError', 'Server Error');
+
+// Create the Lookup
+var lookup = exports.lookup = new perror.Lookup(exports);
+
+// Throw errors by name & code
+throw lookup.code(403, 'Invalid password');
+throw lookup.name('NotFound', 'Page not found');
+```
+
+*Note*: both `code()` and `name()` use the generic `Error` object when no matching Error is found!
