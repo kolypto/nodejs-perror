@@ -33,7 +33,8 @@ Table of Contents
     * <a href="#error-instances">Error Instances</a>
         * <a href="#throwing-errors">Throwing Errors</a>
         * <a href="#wrapping-errors">Wrapping Errors</a>
-    * <a href="#http-compatible-errors">HTTP-compatible errors</a> 
+    * <a href="#http-compatible-errors">HTTP-compatible errors</a>
+* <a href="#perrorlookup">perror.Lookup</a> 
 
 
 
