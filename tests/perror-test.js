@@ -130,6 +130,7 @@ exports.testCodeMessageHttp = function(test){
         httpCode: 501,
         message: 'Custom Error: Hey!',
         data: { a:1 }
+        // stack trace is not exportable!
     });
 
     return test.done();
@@ -159,6 +160,17 @@ exports.testWrapping = function(test){
     test.strictEqual(e.code, 10); // overridden
     test.strictEqual(e.httpCode, 501); // overridden
     test.deepEqual(e.data, {a:1}); // overridden
+
+    // Stack trace should not be enumerable
+    var json = JSON.parse(JSON.stringify(e));
+    test.deepEqual(json, {
+        name: 'CustomError',
+        code: 10,
+        httpCode: 501,
+        message: 'Generic Error: Custom Error: Hey!',
+        data: { a:1 }
+        // stack trace is not exportable!
+    });
 
     test.done();
 };
