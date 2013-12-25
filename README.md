@@ -25,6 +25,16 @@ Key features:
 Table of Contents
 =================
 
+* <a href="#example">Example</a>
+* <a href="#perror-1">perror()</a>
+* <a href="#use-cases">Use Cases</a>
+    * <a href="#generic-errors">Generic Errors</a>
+    * <a href="#code-and-message">Code and Message</a>
+    * <a href="#error-instances">Error Instances</a>
+        * <a href="#throwing-errors">Throwing Errors</a>
+        * <a href="#wrapping-errors">Wrapping Errors</a>
+    * <a href="#http-compatible-errors">HTTP-compatible errors</a> 
+
 
 
 Example
