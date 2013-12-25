@@ -12,9 +12,18 @@ Key features:
 * Predefined codes and messages
 * HTTP-compatible errors
 * Errors can contain additional debug data
+* JSON-friendly
 * Automatically wraps other error objects
 * Extremely lightweight
 * Unit-tested
+
+
+
+
+
+
+Table of Contents
+=================
 
 
 
@@ -59,11 +68,38 @@ The generic signature is:
 
 > perror([code, ] name [, message] [, superCtor])
 
+Arguments:
+
+* `code: Number?`: Optional numeric error code, stored into the `code` property.
+  When not provided - the property is not set.
+
+  Note: only numeric error codes are supported!
+* `name: String`: Error object name. Is stored into the `name` property.
+* `message: String?`: Optional error message prefix. If specified - is prepended to the error message.
+* `superCtor: Function?`: Optional parent superclass constructor. Use to inherit from specific error objects.
+
 It returns an Error object which accepts the following arguments:
 
 * `message: String|Error`: Error message string, or another Error object to wrap.
 * `data: *?`: Arbitrary metadata to store into the `data` property
 
+In addition, the following chain methods are available:
+
+* `httpCode(Number)`: Associate an HTTP code with the error. Is stored into the `httpCode` property.
+* `extra(Object)`: Add arbitrary fields to error instances: the provided object fields are copied into the error instance.
+
+An error instance has the following properties:
+
+* `name: String`: Error name
+* `message: String`: Error message
+* `code: Number?`: Error code, if set
+* `data: *?`: Error debug data, if provided
+* `httpCode: Number?`: HTTP error code, if set
+
+
+
+Use Cases
+=========
 
 Generic Errors
 --------------
@@ -83,25 +119,102 @@ Example:
 ```js
 var RuntimeError = perror('RuntimeError');
 
-try { throw new RuntimeError; }
+try { throw new RuntimeError('something bad'); }
 catch(e){
     // Standard Error object fields
     e.name;
     e.message;
     // Convertible to string
-    console.log(e);
+    console.log(e); // -> 'RuntimeError: something bad'
 }
 ```
 
 
 Code and Message
 ----------------
+You can associate numeric error codes and message prefixes with the error object.
 
-Throwing Errors
+> perror([code, ], name[, message] [, superCtor])
+
+Example:
+
+```js
+var NotFoundError = perror(10, 'NotFoundError', 'Not found');
+
+try { throw new NotFoundError('page'); }
+catch(e){
+    e.name; // -> 'NotFoundError'
+    e.code; // -> 10
+    e.message; // -> 'Not Found: page'
+}
+```
+
+Error Instances
 ---------------
+
+### Throwing Errors
+Each Error constructor built by `perror()` accepts two arguments: the message, and the optional debug data.
+
+Example:
+
+```js
+var RuntimeError = perror('RuntimeError');
+
+try {
+    throw new RuntimeError('broken', { a: 1 });
+}
+catch(e){
+    e.data; // -> { a: 1 }
+}
+```
+
+### Wrapping Errors
+Error objects from `perror()` can wrap other objects: all properties are copied to the wrapper, saving the original message prefix.
+
+Is useful when you need to make sure the value got from elsewhere is an Error object with some known fields,
+like `httpCode` (see below).
+
+Example:
+
+```js
+    // An error with defaults
+    var GenericError = perror(1024, 'GenericError', 'Generic Error');
+
+    // A specific error with overrides
+    var CustomError = perror(10, 'CustomError', 'Custom Error');
+
+    try {
+        throw new GenericError(
+            new CustomError('Hey!')
+        );
+    } catch(e){
+        e.code; // -> 10              -- copied
+        e.name; // -> 'CustomError'   -- copied
+        e.message; // -> 'Generic Error: Custom Error: Hey!'   -- merged
+    }
+```
 
 HTTP-compatible errors
 ----------------------
+The Error constructor has a `httpCode(Number)` method which allows you to specify an associated HTTP error code.
+This comes extremely handy when the exception is to be reported via HTTP.
 
-Inheritance
------------
+Combine it with Wrapping and get defaults for your HTTP response codes in case of errors!
+
+Example:
+
+```js
+var ServerError = perror('ServerError').httpCode(500);
+
+app.get('/', function(req, res){
+    get_page(function(err, page){
+        if (err){
+            err = new ServerError(err); // wrap it to get a guaranteed httpCode
+            res.type('json').send(
+                err.httpCode,
+                err // send the whole error object. stack trace is not exported
+            );
+        }
+    });
+});
+```
