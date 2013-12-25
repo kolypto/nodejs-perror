@@ -9,7 +9,11 @@ exports.testLookup = function(test){
     var namespace = {
         AuthError:    perror(403, 'AuthError', 'Unauthorized'),
         NotFound:     perror(404, 'NotFound', 'Not found'),
-        ServerError:  perror(500, 'ServerError', 'Server Error')
+        ServerError:  perror(500, 'ServerError', 'Server Error'),
+        a: {},
+        b: null,
+        c: undefined,
+        n: 9
     };
     var lookup = new perror.Lookup(namespace);
 
