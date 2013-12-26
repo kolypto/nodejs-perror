@@ -243,7 +243,7 @@ perror.Lookup does precisely this: construct it with an object of Errors (most p
 lookup!
 
 ```js
-var perror = require('perror);
+var perror = require('perror');
 
 // Define your objects
 exports.AuthError   = perror(403, 'AuthError',   'Unauthorized');
